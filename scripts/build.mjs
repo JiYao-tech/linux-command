@@ -31,6 +31,7 @@ function sanitizeCommandName(value) {
     await FS.copySync(templateImgDir, path.resolve(deployDir, 'img'));
     
     await FS.copyFile(path.resolve(process.cwd(), 'template', 'js', 'copy-to-clipboard.js'), path.resolve(deployDir, 'js', 'copy-to-clipboard.js'));
+    await FS.copyFile(path.resolve(process.cwd(), 'template', 'js', 'toc.js'), path.resolve(deployDir, 'js', 'toc.js'));
     await FS.copyFile(path.resolve(process.cwd(), 'node_modules/@wcj/dark-mode/main.js'), path.resolve(deployDir, 'js', 'dark-mode.min.js'));
     await FS.copyFile(path.resolve(process.cwd(), 'node_modules/@uiw/github-corners/lib/index.js'), path.resolve(deployDir, 'js', 'github-corners.js'));
 
