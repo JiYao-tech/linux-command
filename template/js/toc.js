@@ -80,7 +80,8 @@
           const targetElement = document.getElementById(targetId);
           
           if (targetElement) {
-            const offsetTop = targetElement.offsetTop - 80;
+            const headerHeight = document.querySelector('.header_list')?.offsetHeight || 0;
+            const offsetTop = targetElement.offsetTop - headerHeight - 20;
             window.scrollTo({
               top: offsetTop,
               behavior: 'smooth'
@@ -91,7 +92,8 @@
     }
 
     highlightCurrentSection() {
-      const scrollPosition = window.scrollY + 100;
+      const headerHeight = document.querySelector('.header_list')?.offsetHeight || 0;
+      const scrollPosition = window.scrollY + headerHeight + 60;
       const headings = this.markdownBody.querySelectorAll('h1, h2, h3');
       const links = this.tocContainer.querySelectorAll('.toc-link');
       
@@ -108,8 +110,24 @@
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${currentHeadingId}`) {
           link.classList.add('active');
+          this.scrollToActiveLink(link);
         }
       });
+    }
+
+    scrollToActiveLink(activeLink) {
+      const tocContainer = this.tocContainer.querySelector('.toc-list');
+      if (tocContainer && activeLink) {
+        const containerRect = tocContainer.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        
+        if (linkRect.bottom > containerRect.bottom || linkRect.top < containerRect.top) {
+          activeLink.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }
     }
   }
 
