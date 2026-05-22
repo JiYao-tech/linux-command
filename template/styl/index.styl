@@ -329,16 +329,16 @@ body {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: calc(50% - 450px - 20px);
-  max-width: 280px;
-  min-width: 200px;
+  width: calc(50% - 450px);
+  max-width: 300px;
+  min-width: 220px;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 20px;
-  padding-right: 10px;
+  padding: 0 20px;
+  box-sizing: border-box;
   z-index: 50;
 }
 
@@ -350,6 +350,8 @@ body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   max-height: 100%;
   overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .toc-title {
@@ -514,11 +516,10 @@ body {
   }
   
   .toc-sidebar {
-    width: calc(50% - 450px - 15px);
-    max-width: 220px;
-    min-width: 180px;
-    padding-left: 15px;
-    padding-right: 15px;
+    width: calc(50% - 450px);
+    max-width: 350px;
+    min-width: 350px;
+    padding: 0 15px;
   }
   
   .markdown-body {
@@ -537,11 +538,10 @@ body {
   }
   
   .toc-sidebar {
-    width: calc(50% - 450px - 20px);
-    max-width: 280px;
-    min-width: 200px;
-    padding-left: 20px;
-    padding-right: 20px;
+    width: calc(50% - 450px);
+    max-width: 300px;
+    min-width: 220px;
+    padding: 0 20px;
   }
   
   .search_list, .hotlist {
