@@ -1,165 +1,172 @@
-tcpdump
-===
+📘 tcpdump
+=========================
 
-一款sniffer工具，是Linux上的抓包工具，嗅探器
+> **tcpdump**​ 是 Linux / Unix 下最常用的命令行网络抓包分析工具，可基于网卡、端口、IP、协议等进行过滤。
 
-## 补充说明
+* * *
 
-**tcpdump命令** 是一款抓包，嗅探器工具，它可以打印所有经过网络接口的数据包的头信息，也可以使用`-w`选项将数据包保存到文件中，方便以后分析。
+基本语法
+------
 
-###  语法 
+    tcpdump [选项] [过滤表达式]
 
-```shell
-tcpdump(选项)
-```
+通常需要 **root 权限**：
+    sudo tcpdump ...
 
-###  选项 
+* * *
 
-```shell
--a：尝试将网络和广播地址转换成名称；
--c<数据包数目>：收到指定的数据包数目后，就停止进行倾倒操作；
--d：把编译过的数据包编码转换成可阅读的格式，并倾倒到标准输出；
--dd：把编译过的数据包编码转换成C语言的格式，并倾倒到标准输出；
--ddd：把编译过的数据包编码转换成十进制数字的格式，并倾倒到标准输出；
--e：在每列倾倒资料上显示连接层级的文件头；
--f：用数字显示网际网络地址；
--F<表达文件>：指定内含表达方式的文件；
--i<网络界面>：使用指定的网络截面送出数据包；
--l：使用标准输出列的缓冲区；
--n：不把主机的网络地址转换成名字；
--N：不列出域名；
--O：不将数据包编码最佳化；
--p：不让网络界面进入混杂模式；
--q ：快速输出，仅列出少数的传输协议信息；
--r<数据包文件>：从指定的文件读取数据包数据；
--s<数据包大小>：设置每个数据包的大小；
--S：用绝对而非相对数值列出TCP关联数；
--t：在每列倾倒资料上不显示时间戳记；
--tt： 在每列倾倒资料上显示未经格式化的时间戳记；
--T<数据包类型>：强制将表达方式所指定的数据包转译成设置的数据包类型；
--v：详细显示指令执行过程；
--vv：更详细显示指令执行过程；
--x：用十六进制字码列出数据包资料；
--w<数据包文件>：把数据包数据写入指定的文件。
-```
+常用选项（Options）
+---------------
 
-###  实例 
+| 选项                | 说明                               |
+| ----------------- | -------------------------------- |
+| `-i <网卡>`         | 指定网卡，如 `-i eth0`，`-i any`表示所有网卡  |
+| `-n`              | 不解析主机名（不做 DNS 反向解析，加快显示）         |
+| `-nn`             | 不解析主机名 + 不解析端口服务名（显示纯 IP/端口）     |
+| `-v / -vv / -vvv` | 显示更详细的信息                         |
+| `-c <N>`          | 抓取 N 个包后停止                       |
+| `-w <文件.pcap>`    | 保存原始数据包到文件（可用 Wireshark 分析）      |
+| `-r <文件.pcap>`    | 读取已保存的抓包文件                       |
+| `-X`              | 同时显示十六进制和 ASCII                  |
+| `-XX`             | 包含链路层头信息                         |
+| `-e`              | 显示链路层（MAC）头                      |
+| `-t`              | 不显示时间戳                           |
+| `-tttt`           | 显示可读的标准时间戳                       |
+| `-s <len>`        | 每个包抓取前 len 字节（默认可能截断，`-s 0`抓完整包） |
+| `-C <MB>`         | 与 `-w`配合，达到指定大小后自动切文件            |
+| `-G <秒>`          | 按时间轮转保存                          |
 
- **直接启动tcpdump将监视第一个网络接口上所有流过的数据包** 
+示例：
+    sudo tcpdump -i any -nn -s 0 -w capture.pcap
 
-```shell
-tcpdump
-```
+* * *
 
- **监视指定网络接口的数据包** 
+过滤表达式（Filter / BPF）
+---------------------
 
-```shell
-tcpdump -i eth1
-```
+tcpdump 使用 **BPF（Berkeley Packet Filter）**​ 语法。
 
-如果不指定网卡，默认tcpdump只会监视第一个网络接口，一般是eth0，下面的例子都没有指定网络接口。
+### 1️⃣ 指定网卡 / IP / 端口
 
- **监视指定主机的数据包** 
+| 表达式                   | 说明                     |
+| --------------------- | ---------------------- |
+| `host 192.168.1.10`   | 源或目的 IP 为 192.168.1.10 |
+| `src host 10.0.0.1`   | 源 IP                   |
+| `dst host 10.0.0.1`   | 目的 IP                  |
+| `net 192.168.1.0/24`  | 某网段                    |
+| `port 80`             | 源或目的端口 80              |
+| `src port 22`         | 源端口                    |
+| `dst port 443`        | 目的端口                   |
+| `portrange 8000-8080` | 端口范围                   |
 
-打印所有进入或离开sundown的数据包。
+* * *
 
-```shell
-tcpdump host sundown
-```
+### 2️⃣ 指定协议
 
-也可以指定ip,例如截获所有210.27.48.1 的主机收到的和发出的所有的数据包
+| 表达式    | 说明     |
+| ------ | ------ |
+| `tcp`  | TCP 包  |
+| `udp`  | UDP 包  |
+| `icmp` | ICMP 包 |
+| `arp`  | ARP 包  |
+| `ip`   | IPv4   |
+| `ip6`  | IPv6   |
 
-```shell
-tcpdump host 210.27.48.1
-```
+示例：
+    tcpdump tcp and port 80
 
-打印helios 与 hot 或者与 ace 之间通信的数据包
+* * *
 
-```shell
-tcpdump host helios and \( hot or ace \)
-```
+### 3️⃣ 逻辑运算符
 
-截获主机210.27.48.1 和主机210.27.48.2 或210.27.48.3的通信
+| 符号          | 含义  |
+| ----------- | --- |
+| `and`/ `&&` | 与   |
+| `or`/ `     |     |
+| `not`/ `!`  | 非   |
 
-```shell
-tcpdump host 210.27.48.1 and \ (210.27.48.2 or 210.27.48.3 \)
-```
+示例：
+    tcpdump 'host 192.168.1.10 and (port 80 or port 443)'
+    tcpdump 'tcp and not port 22'
 
-打印ace与任何其他主机之间通信的IP 数据包, 但不包括与helios之间的数据包.
+⚠️ **注意**：含 `()`、`|`、`!`时建议用 **单引号包裹**，避免 shell 解析错误。
 
-```shell
-tcpdump ip host ace and not helios
-```
+* * *
 
-如果想要获取主机210.27.48.1除了和主机210.27.48.2之外所有主机通信的ip包，使用命令：
+### 4️⃣ 常见高级过滤
 
-```shell
-tcpdump ip host 210.27.48.1 and ! 210.27.48.2
-```
+| 表达式                                                             | 说明             |
+| --------------------------------------------------------------- | -------------- |
+| `tcp[tcpflags] & (tcp-syn                                       | tcp-ack) != 0` |
+| `tcp[tcpflags] & tcp-syn != 0 and tcp[tcpflags] & tcp-ack == 0` | 仅 SYN（三次握手首包）  |
+| `icmp`                                                          | ping 包         |
+| `ether host xx:xx:xx:xx:xx:xx`                                  | 指定 MAC 地址      |
 
-抓取eth0网卡上的包，使用:
+* * *
 
-```shell
-sudo tcpdump -i eth0
-```
+常用实战示例
+--------
 
-截获主机hostname发送的所有数据
+### 🔹 1. 查看所有网卡流量（推荐基础用法）
 
-```shell
-tcpdump -i eth0 src host hostname
-```
+    sudo tcpdump -i any -nn
 
-监视所有送到主机hostname的数据包
+### 🔹 2. 抓指定 IP 的所有流量
 
-```shell
-tcpdump -i eth0 dst host hostname
-```
+    sudo tcpdump -i eth0 -nn host 192.168.1.100
 
- **监视指定主机和端口的数据包** 
+### 🔹 3. 抓某 IP 的 80 端口（HTTP）
 
-如果想要获取主机210.27.48.1接收或发出的telnet包，使用如下命令
+    sudo tcpdump -i any -nn 'host 192.168.1.100 and port 80'
 
-```shell
-tcpdump tcp port 23 and host 210.27.48.1
-```
+### 🔹 4. 抓 TCP 三次握手（SYN / SYN-ACK）
 
-对本机的udp 123 端口进行监视 123 为ntp的服务端口
+    sudo tcpdump -i any -nn 'tcp[tcpflags] & tcp-syn != 0'
 
-```shell
-tcpdump udp port 123
-```
+### 🔹 5. 抓 DNS（UDP 53）
 
- **监视指定网络的数据包** 
+    sudo tcpdump -i any -nn -v udp port 53
 
-打印本地主机与Berkeley网络上的主机之间的所有通信数据包
+### 🔹 6. 抓 SSH（22）但不看自己连接
 
-```shell
-tcpdump net ucb-ether
-```
+    sudo tcpdump -i eth0 -nn 'port 22 and not host 127.0.0.1'
 
-ucb-ether此处可理解为“Berkeley网络”的网络地址，此表达式最原始的含义可表达为：打印网络地址为ucb-ether的所有数据包
+### 🔹 7. 保存抓包供 Wireshark 分析（最常用）
 
-打印所有通过网关snup的ftp数据包
+    sudo tcpdump -i any -nn -s 0 -c 10000 -w capture.pcap
 
-```shell
-tcpdump 'gateway snup and (port ftp or ftp-data)'
-```
+### 🔹 8. 读取已保存的 pcap 文件
 
-注意：表达式被单引号括起来了，这可以防止shell对其中的括号进行错误解析
+    tcpdump -nn -r capture.pcap
+    tcpdump -nn -r capture.pcap 'tcp port 80'
 
-打印所有源地址或目标地址是本地主机的IP数据包
+### 🔹 9. 显示 ASCII 内容（如 HTTP 明文调试）
 
-```shell
-tcpdump ip and not net localnet
-```
+    sudo tcpdump -i any -Ann -s 0 'port 80'
 
-如果本地网络通过网关连到了另一网络，则另一网络并不能算作本地网络。
+> `-A`以 ASCII 显示（部分版本需 `tcpdump -A`）
 
-抓取80端口的HTTP报文，以文本形式展示：
+* * *
 
-```shell
-sudo tcpdump -i any port 80 -A
-```
+使用建议 & 注意事项
+-------------
 
+✅ 生产环境 **尽量加 `-c`或 `-w`+ 限制大小**，避免长时间抓包打满磁盘
 
+✅ 分析复杂协议推荐：`tcpdump -w xxx.pcap`→ **Wireshark 打开**​
 
+✅ 高流量服务器慎用 `-v`/ `-X`，会影响性能
+
+✅ 容器 / 云环境注意网卡名称（如 `eth0`, `ens3`, `any`）
+
+* * *
+
+如果你需要：
+
+* ✅ **Wireshark vs tcpdump 对比**
+
+* ✅ **HTTP / HTTPS / MySQL / Redis 专项抓包示例**
+
+* ✅ **k8s / docker 容器内容器抓包方式**
+
+可以直接告诉我 👍
